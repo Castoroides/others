@@ -1,0 +1,143 @@
+<canvas id="canvas"></canvas>
+
+<style>
+#canvas{
+	width: 100%;
+	height: 90vh;
+}
+</style>
+
+<script>
+// 画像読み込み
+let imageWidth = 409
+let imageHeight = 600
+data = new Array(
+	"https://3.bp.blogspot.com/-x1YD4kp-X9E/WQBAA3RKDbI/AAAAAAABD9M/5K8vEH6kYSo5M9r2jzxheGlnup2k-El5gCLcB/s800/card_heart_02.png",
+	"https://2.bp.blogspot.com/-S-31SRfkS1o/WQBAEtCo1nI/AAAAAAABD98/fzjjCIIibhMkeoKx9NfyTo3i1TjRaONPQCLcB/s800/card_spade_01.png",
+	"https://4.bp.blogspot.com/-hIKME4x_kbQ/WQA_3IHzulI/AAAAAAABD7o/Ft4JOq2ydaEHteja59Zzv_i3ieXnmONwwCLcB/s800/card_club_03.png",
+	"https://4.bp.blogspot.com/-WNnDDDnVkrs/WQA_9vUTTJI/AAAAAAABD8g/PSyYSizOnVkaC37L7bLn82Ex83Tvm0BKACLcB/s800/card_diamond_04.png",
+	"https://4.bp.blogspot.com/-bvSGYORb6Xg/WQBAF61kUOI/AAAAAAABD-Q/SalVkKKYYt85TNJJsOjmgNwfT0ao3foewCLcB/s800/card_spade_05.png",
+	"https://3.bp.blogspot.com/-w5tuOxBszlU/WQBABseF49I/AAAAAAABD9c/9yF8y-6012MKF5UlSz-dxORnZU_YhEuxgCLcB/s800/card_heart_06.png",
+	"https://2.bp.blogspot.com/-LXJw0prlZp0/WQA_6wZyEVI/AAAAAAABD74/eFWVHzCtgLMj_C-JPzjOd7YfhiveHytlQCLcB/s800/card_club_07.png",
+	"https://1.bp.blogspot.com/-FZGbdtedARU/WQA__nBH5iI/AAAAAAABD84/X9BsjJbBLZcuGBr5VT2EeisGjlp0wtJpwCLcB/s800/card_diamond_08.png",
+	"https://1.bp.blogspot.com/-lYcdLoEoqhk/WQBAGkz_02I/AAAAAAABD-Y/BzeTL07VRhc9viqmclMywil_LqOdQGL5QCLcB/s800/card_spade_09.png",
+	"https://4.bp.blogspot.com/-Dj2Yzi1XR-E/WQBADWUni-I/AAAAAAABD9s/2Cy3plnNZGwt9sV3vDO4eCvJSSg9DGx-wCLcB/s800/card_heart_10.png"
+)
+imag= new Array();
+for (i=0; i<data.length; i++){
+	imag[i] = new Image();
+	imag[i].src = data[i];
+}
+
+// getContextメソッドで描画機能を有効にする
+var canvas = document.querySelector("canvas");
+var context = canvas.getContext('2d');
+
+// canvas の幅と高さの指定
+var canvas = document.getElementById("canvas");
+canvas.width = canvas.clientWidth;
+canvas.height = canvas.clientHeight;
+
+// トランプのクラス
+var Card = function(scale, color, vx, vxs, vy, gv) {
+	this.scale = scale; // 縮尺
+	this.dstWidth = dstWidth;
+	this.dstHeight = dstHeight;
+	this.kind = kind; // トランプの種類
+	this.vx = vx; // X速度
+	this.vxs = vxs; // 退場時の速度
+	this.vy = vy; // Y速度
+	this.gv = gv; // 重力
+	this.position = { // 位置
+		x: 0,
+		y: 0
+	};
+};
+
+// 変数宣言
+var Cards = []; // トランプをまとめる配列
+var kind;
+var scale;
+var dstWidth;
+var dstHeight;
+var x;
+var xs;
+var y;
+var g;
+var indx;
+var startDate = new Date();
+var interval = 2000;
+
+// ループ処理
+function animloop(){
+	
+	requestAnimFrame(animloop);
+	
+	// カードの追加
+	if(new Date() - startDate > interval){
+		startDate = new Date();
+		
+		// 詳細値の作成
+		//Math.random() * (max - min) + min;
+		kind = Math.random() * 10;
+		scale = Math.random() * (0.25 - 0.1) + 0.1;
+		dstWidth = imageWidth * scale;
+		dstHeight = imageHeight * scale;
+		x = Math.random() * (10) -5;
+		xs = x / 10;
+		y = Math.random()* 9 + 4;
+		g = Math.random()* 0.2 + 0.3;
+		indx = Cards.length;
+		
+		Cards[indx] = new Card(scale, kind, x, xs, -y, g);
+		Cards[indx].position.x = Math.random() * (canvas.width);
+		Cards[indx].position.y = 100;
+	}
+	// カードの更新
+	for (var i in Cards) {
+		Cards[i].update();
+	}
+}
+
+// コピペ from https://www.paulirish.com/2011/requestanimationframe-for-smart-animating/
+window.requestAnimFrame = (function(){
+  return  window.requestAnimationFrame       ||
+          window.webkitRequestAnimationFrame ||
+          window.mozRequestAnimationFrame    ||
+          function( callback ){
+            window.setTimeout(callback, 1000 / 60);
+          };
+})();
+
+// 座標の更新
+Card.prototype.update = function() {
+	this.vy += this.gv;
+	this.position.x += this.vx;
+	this.position.y += this.vy;
+	
+	// 地面の衝突判定
+	if (this.position.y > canvas.height - this.dstHeight) {
+		this.vy *= -0.8;
+		this.vx *= 0.85;
+		this.position.y = canvas.height - this.dstHeight;
+		if(Math.abs(this.vx) < 0.8){
+			this.position.x += this.vxs;
+		}
+	}
+	this.draw();
+};
+
+// canvasに描画
+Card.prototype.draw = function() {
+	context.beginPath();
+	context.arc(this.position.x, this.position.y, this.scale, 0, 2*Math.PI, false);
+	context.fillStyle = this.color;
+	//context.fill();
+	console.log(Math.floor(this.kind))
+	context.drawImage(imag[Math.floor(this.kind)], this.position.x, this.position.y, this.dstWidth, this.dstHeight);
+};
+
+// アニメーションの起点
+animloop();
+
+</script>
