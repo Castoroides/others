@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <title>MimicryWorker</title>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      .wrapper{
+        width: 100%;
+        height: 95vh;
+      }
+      #canvas {
+        background-color: #000;
+        color: #fff;
+        font-family: Monaco, Consolas, Courier New, Courier, monospace, sans-serif;
+        margin: 0 auto;
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+        <canvas id="canvas"></canvas>
+    <!-- .wrapper // --></div>
+
+    <script>
+        // canvasの大きさをjsでwrapperに合わせる（https://qiita.com/ShinyaOkazawa/items/9e662bf2121548f79d5f）
+        let w = $('.wrapper').width();
+        let h = $('.wrapper').height();
+        $('#canvas').attr('width', w);
+        $('#canvas').attr('height', h);
+
+        // getContextメソッドで描画機能を有効にする
+        const canvas = document.getElementById("canvas");
+        const CLI_txt = canvas.getContext('2d');
+
+        // 起動時のテキストを描画
+        var currentDate = new Date()
+        CLI_txt.font = '18px Monaco, Consolas, Courier New, Courier, monospace, sans-serif';
+        CLI_txt.fillStyle = '#fff';
+        CLI_txt.fillText('-------------------------------------------------', 30, 30);
+        CLI_txt.fillText('Run Start: ' + currentDate.toLocaleString("ja"), 30, 50);
+        CLI_txt.fillText('Process start...[', 30, 90);
+
+        // 1文字当たりの大きさを設定
+        const txt_w = 10;
+        const txt_h = 40;
+
+        // テキストを描画する座標を計算
+        let crd_x = 190;
+        let crd_y = 90;
+
+        // 待機時間カウンター
+        let wt = 0;
+
+        // 乱数作成用
+        let ran_100 = 0;
+        let ran_10 = 0;
+        let ran_1 = 0;
+        let RNG = 0;
+        
+        // ループ処理
+        function animloop(){
+
+            if (wt < 0) {
+                create_RNGnum();
+                crd_x = crd_x + txt_w;
+
+                // 横幅がいっぱいになったら改行
+                if (crd_x > 500) {
+                    CLI_txt.fillText(']', crd_x, crd_y);
+                    crd_x = 190;
+                    crd_y = crd_y + txt_h;
+
+                    // 縦幅がいっぱいになったら終了
+                    if (crd_y > 600) {
+                        CLI_txt.fillText('The program finished successfully.', 30, crd_y);
+                        CLI_txt.fillText('End Time: ' +currentDate.toLocaleString("ja"), 30, crd_y + 20);
+                        CLI_txt.fillText('-------------------------------------------------', 30, crd_y + 40);
+                    }else{
+                        CLI_txt.fillText('Next process...[', 30, crd_y);
+                    }
+                }
+                CLI_txt.fillText('#', crd_x, crd_y);
+
+            }else{
+                wt = wt - 1;
+            }
+
+            // 縦幅がいっぱいになったら終了
+            if (crd_y < 600) {
+                requestAnimFrame(animloop);
+            }
+        }
+
+        // requestAnimationFrame未対応のブラウザ対策（https://qiita.com/nouka/items/1b6e04201c10ec432f53）
+        window.requestAnimFrame = (function() {
+            return (
+                window.requestAnimationFrame ||
+                window.webkitRequestAnimationFrame ||
+                window.mozRequestAnimationFrame ||
+                window.oRequestAnimationFrame ||
+                window.msRequestAnimationFrame ||
+                function(callback) {
+                window.setTimeout(callback, 1000 / 60);
+                }
+            );
+        })();
+
+        // 乱数生成処理
+        function create_RNGnum() {
+            ran_100 = Math.floor(Math.random() * 10);
+            ran_10 = Math.floor(Math.random() * 10);
+            ran_1 = Math.floor(Math.random() * 10);
+            RNG = ran_100 * 100 + ran_100 * 10 + ran_1;
+            wt = RNG * 0.01;
+
+            if (RNG > 950) {
+                wt = Math.floor(Math.random() * 10) * 60; // 1~9秒をたまに追加
+                console.log(wt / 60);
+            }
+            return 0;
+        }
+                
+        // アニメーションの起点
+        animloop()
+
+        </script>
+  </body>
+</html>
