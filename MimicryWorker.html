@@ -10,10 +10,11 @@
       html, body {
         margin: 0;
         padding: 0;
+        overflow: hidden;
       }
       .wrapper{
         width: 100%;
-        height: 95vh;
+        height: 100vh;
       }
       #canvas {
         background-color: #000;
@@ -44,17 +45,17 @@
         var currentDate = new Date()
         CLI_txt.font = '18px Monaco, Consolas, Courier New, Courier, monospace, sans-serif';
         CLI_txt.fillStyle = '#fff';
-        CLI_txt.fillText('-------------------------------------------------', 30, 30);
-        CLI_txt.fillText('Run Start: ' + currentDate.toLocaleString("ja"), 30, 50);
-        CLI_txt.fillText('Process start...[', 30, 90);
+        CLI_txt.fillText('-------------------------------------------------', 10, 10);
+        CLI_txt.fillText('Run Start: ' + currentDate.toLocaleString("ja"), 10, 30);
+        CLI_txt.fillText('Process start...[', 10, 70);
 
         // 1文字当たりの大きさを設定
         const txt_w = 10;
         const txt_h = 40;
 
         // テキストを描画する座標を計算
-        let crd_x = 190;
-        let crd_y = 90;
+        let crd_x = 170;
+        let crd_y = 70;
 
         // 待機時間カウンター
         let wt = 0;
@@ -70,31 +71,32 @@
 
             if (wt < 0) {
                 create_RNGnum();
+                wt = 0;
                 crd_x = crd_x + txt_w;
 
                 // 横幅がいっぱいになったら改行
-                if (crd_x > 500) {
+                if (crd_x > w*0.85) {
                     CLI_txt.fillText(']', crd_x, crd_y);
-                    crd_x = 190;
+                    crd_x = 160;
                     crd_y = crd_y + txt_h;
 
                     // 縦幅がいっぱいになったら終了
-                    if (crd_y > 600) {
-                        CLI_txt.fillText('The program finished successfully.', 30, crd_y);
-                        CLI_txt.fillText('End Time: ' +currentDate.toLocaleString("ja"), 30, crd_y + 20);
-                        CLI_txt.fillText('-------------------------------------------------', 30, crd_y + 40);
+                    if (crd_y > h*0.6) {
+                        CLI_txt.fillText('The program finished successfully.', 10, crd_y);
+                        CLI_txt.fillText('End Time: ' +currentDate.toLocaleString("ja"), 10, crd_y + 20);
+                        CLI_txt.fillText('-------------------------------------------------', 10, crd_y + 40);
                     }else{
-                        CLI_txt.fillText('Next process...[', 30, crd_y);
+                        CLI_txt.fillText('Next process...[', 10, crd_y);
                     }
+                }else{
+                  CLI_txt.fillText('#', crd_x, crd_y);
                 }
-                CLI_txt.fillText('#', crd_x, crd_y);
-
             }else{
                 wt = wt - 1;
             }
 
             // 縦幅がいっぱいになったら終了
-            if (crd_y < 600) {
+            if (crd_y < h*0.6) {
                 requestAnimFrame(animloop);
             }
         }
