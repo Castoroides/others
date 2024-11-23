@@ -42,10 +42,10 @@
         const CLI_txt = canvas.getContext('2d');
 
         // 起動時のテキストを描画
-        var currentDate = new Date()
+        let currentDate = new Date()
         CLI_txt.font = '18px Monaco, Consolas, Courier New, Courier, monospace, sans-serif';
         CLI_txt.fillStyle = '#fff';
-        CLI_txt.fillText('-------------------------------------------------', 10, 10);
+        CLI_txt.fillText('--------------------------------------------------------------', 10, 10);
         CLI_txt.fillText('Run Start: ' + currentDate.toLocaleString("ja"), 10, 30);
         CLI_txt.fillText('Process start...[', 10, 70);
 
@@ -71,20 +71,21 @@
 
             if (wt < 0) {
                 create_RNGnum();
-                wt = 0;
+                // wt = 0;
                 crd_x = crd_x + txt_w;
 
                 // 横幅がいっぱいになったら改行
-                if (crd_x > w*0.85) {
+                if (crd_x > w*0.85 || crd_x > 600) {
                     CLI_txt.fillText(']', crd_x, crd_y);
                     crd_x = 160;
                     crd_y = crd_y + txt_h;
 
                     // 縦幅がいっぱいになったら終了
                     if (crd_y > h*0.6) {
+                        currentDate = new Date()
                         CLI_txt.fillText('The program finished successfully.', 10, crd_y);
                         CLI_txt.fillText('End Time: ' +currentDate.toLocaleString("ja"), 10, crd_y + 20);
-                        CLI_txt.fillText('-------------------------------------------------', 10, crd_y + 40);
+                        CLI_txt.fillText('--------------------------------------------------------------', 10, crd_y + 40);
                     }else{
                         CLI_txt.fillText('Next process...[', 10, crd_y);
                     }
