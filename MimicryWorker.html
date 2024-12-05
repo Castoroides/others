@@ -26,7 +26,7 @@
     </style>
   </head>
   <body>
-    <div class="wrapper">
+    <div class="wrapper" style="text-align:center;">
         <canvas id="canvas"></canvas>
     <!-- .wrapper // --></div>
 
@@ -34,9 +34,16 @@
         // canvasの大きさをjsでwrapperに合わせる（https://qiita.com/ShinyaOkazawa/items/9e662bf2121548f79d5f）
         let w = $('.wrapper').width();
         let h = $('.wrapper').height();
-        $('#canvas').attr('width', w);
-        $('#canvas').attr('height', h);
 
+        // スマホ画面なら更に縮小
+        if (w < 768) {
+          $('#canvas').attr('width', w*0.9);
+          $('#canvas').attr('height', h*0.9);
+        }else{
+          $('#canvas').attr('width', w);
+          $('#canvas').attr('height', h);
+        }
+      
         // getContextメソッドで描画機能を有効にする
         const canvas = document.getElementById("canvas");
         const CLI_txt = canvas.getContext('2d');
